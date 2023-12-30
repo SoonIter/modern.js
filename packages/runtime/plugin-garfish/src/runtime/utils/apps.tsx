@@ -35,10 +35,16 @@ export function pathJoin(...args: string[]) {
   return res || '/';
 }
 
-function getAppInstance(
+export function getAppInstance(
   options: typeof Garfish.options,
   appInfo: ModulesInfo[number],
   manifest?: Manifest,
+  hooks: {
+    useRouteMatch?: any;
+    useMatches?: any;
+    useLocation?: any;
+    useHref?: any;
+  } = {},
 ) {
   let locationHref = '';
   function MicroApp(props: MicroProps) {
@@ -47,11 +53,13 @@ function getAppInstance(
     const [SubModuleComponent, setSubModuleComponent] = useState<
       React.ComponentType<any> | undefined
     >();
+    const { useHref, useLocation, useMatches, useRouteMatch } = hooks;
     const context = useContext(RuntimeReactContext);
-    const match = context?.router?.useRouteMatch?.();
-    const matchs = context?.router?.useMatches?.();
-    const location = context?.router?.useLocation?.();
-    let basename = options?.basename || '/';
+    const match = useRouteMatch?.() ?? context?.router?.useRouteMatch?.();
+    const matchs = useMatches?.() ?? context?.router?.useMatches?.();
+    const location = useLocation?.() ?? context?.router?.useLocation?.();
+    let basename = useHref?.('/') || options?.basename || '/';
+
     if (matchs && matchs.length > 0) {
       const matchItem = {
         ...matchs[matchs.length - 1],

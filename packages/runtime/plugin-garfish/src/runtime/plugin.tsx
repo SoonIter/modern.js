@@ -66,6 +66,8 @@ export default (config: Config): Plugin => ({
             MApp: React.FC<MicroComponentProps>;
             apps: AppMap;
             appInfoList: ModulesInfo;
+            GarfishConfig: null;
+            manifest: null;
           } = {
             MApp: () => {
               logger('MApp init Component Render');
@@ -80,6 +82,8 @@ export default (config: Config): Plugin => ({
               },
             ),
             appInfoList: [],
+            GarfishConfig: null,
+            manifest: null,
           };
 
           constructor(props: any) {
@@ -106,6 +110,8 @@ export default (config: Config): Plugin => ({
                 MApp,
                 apps,
                 appInfoList,
+                GarfishConfig,
+                manifest,
               });
             };
             load();

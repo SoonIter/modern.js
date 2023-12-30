@@ -1,6 +1,7 @@
 import garfish, { interfaces as GarfishInterfaces } from 'garfish';
 import React, { useContext } from 'react';
 import { logger } from '../util';
+import { getAppInstance } from './utils/apps';
 import { GarfishContext } from './utils/Context';
 
 export type Options = typeof garfish.options;
@@ -52,12 +53,34 @@ export type UseModuleApps = {
   readonly apps: ModulesInfo;
 };
 
-export function useModuleApps() {
-  const { apps, MApp, appInfoList } = useContext(GarfishContext);
+interface Props {
+  useHref?: (...args: any[]) => string;
+  useLocation?: (...args: any[]) => { pathname: string };
+  useRouteMatch?: any;
+  useMatches?: any;
+}
+
+export function useModuleApps({
+  useHref,
+  useLocation,
+  useMatches,
+  useRouteMatch,
+}: Props = {}) {
+  const { apps, MApp, appInfoList, GarfishConfig, manifest } =
+    useContext(GarfishContext);
   logger('call useModuleApps', {
     MApp,
     apps: appInfoList,
     ...apps,
+  });
+
+  appInfoList?.forEach(app => {
+    app.Component = getAppInstance(GarfishConfig, app, manifest, {
+      useRouteMatch,
+      useMatches,
+      useLocation,
+      useHref,
+    } as any);
   });
 
   const Info = new Proxy(
